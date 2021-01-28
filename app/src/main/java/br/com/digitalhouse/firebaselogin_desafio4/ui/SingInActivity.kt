@@ -1,7 +1,9 @@
 package br.com.digitalhouse.firebaselogin_desafio4.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import br.com.digitalhouse.firebaselogin_desafio4.R
@@ -51,12 +53,13 @@ class SingInActivity : AppCompatActivity() {
         }
 
 //        settingsGoogle()
+/*        configureGoogleSignIn()
         bind.loginInclude.googleButton.setOnClickListener {
-            configureGoogleSignIn()
             signIn()
-        }
+        }*/
 
     }
+/*
 
     //Google
 
@@ -67,6 +70,8 @@ class SingInActivity : AppCompatActivity() {
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
+
+        val account = GoogleSignIn.getLastSignedInAccount(this)
     }
 
     private fun signIn() {
@@ -74,50 +79,48 @@ class SingInActivity : AppCompatActivity() {
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
 
-/*    private fun setupUI() {
-        bind.googleButton.setOnClickListener {
-            signIn()
-        }
-    }*/
-
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == RC_SIGN_IN) {
-            val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                val account = task.getResult(ApiException::class.java)
-                if (account != null) {
-                    firebaseAuthWithGoogle(account)
-                }
-            } catch (e: ApiException) {
-                Toast.makeText(this, "Google sign in failed:(", Toast.LENGTH_LONG).show()
-            }
+
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            handleSignInResult(task)
         }
     }
 
-    private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
-        val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
+    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+        try {
+            val account = completedTask.getResult(ApiException::class.java)
+            val acct = GoogleSignIn.getLastSignedInAccount(this)
 
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener(this) {task ->
-                if (task.isSuccessful) {
-// nao entra neste bloco de comando
-                    startActivity(Intent(this, MainActivity::class.java))
-                } else {
-                    Toast.makeText(this, "Google sign in failed:(", Toast.LENGTH_LONG).show()
-                }
+            if(acct != null){
+
+                val personName = acct.displayName
+                val personGivenName = acct.givenName
+                val personFamilyName = acct.familyName
+                val personEmail = acct.email
+                val personId = acct.id
+                val personPhoto: Uri? = acct.photoUrl
+
+                Toast.makeText(this, "user: $personName", Toast.LENGTH_SHORT).show()
+                personName?.let { openHome(it) }
             }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user != null) {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
+        } catch (e: ApiException) {
+            Log.i("signInResult", "failed code=" + e.statusCode)
         }
     }
+
+    private fun openHome(msg: String) {
+        // recebe como parametro apenas o nome
+        val intent = Intent(this, MainActivity::class.java).apply {
+            putExtra("nome", msg)
+        }
+        startActivity(intent)
+
+    }
+
+*/
 
 
     fun getDataFields() { // password no firebase por default é 6 digitos

@@ -10,20 +10,26 @@ import br.com.digitalhouse.firebaselogin_desafio4.R
 import br.com.digitalhouse.firebaselogin_desafio4.model.GamesInfo
 import com.bumptech.glide.Glide
 
-class HomeAdapter (private val listGames: List<GamesInfo>, val listener: onGameListener):
-    RecyclerView.Adapter<HomeAdapter.HomeCardViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeCardViewHolder {
+class GamesInfoAdapter(private val listGames: ArrayList<GamesInfo>,
+                       val listener: View.OnClickListener
+): RecyclerView.Adapter<GamesInfoAdapter.GamesViewHolder>() {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): GamesInfoAdapter.GamesViewHolder {
         val itemview = LayoutInflater.from(parent.context).inflate(R.layout.item_games_info, parent, false)
 
-        return HomeCardViewHolder(itemview)
+        return GamesViewHolder(itemview)
     }
 
-    override fun onBindViewHolder(holder: HomeCardViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: GamesInfoAdapter.GamesViewHolder, position: Int) {
+
         val current = listGames[position]
 
         holder.title.text = current.titulo
-        holder.date.text = current.data.toString()
+        holder.date.text = current.data_lancamento.toString()
 
+        holder.img.setOnClickListener(listener)
 
         Glide.with(holder.itemView).asBitmap()
             .load(current.img)
@@ -34,11 +40,8 @@ class HomeAdapter (private val listGames: List<GamesInfo>, val listener: onGameL
     override fun getItemCount() = listGames.size
 
 
-    interface onGameListener{
-        fun click(position: Int)
-    }
 
-    inner class HomeCardViewHolder(view: View): RecyclerView.ViewHolder(view), View.OnClickListener{
+    inner class GamesViewHolder(view: View): RecyclerView.ViewHolder(view), View.OnClickListener{
         val title: TextView = view.findViewById(R.id.tv_title_game)
         val date: TextView = view.findViewById(R.id.tv_year_game)
         val img: ImageView = view.findViewById(R.id.iv_game)
@@ -48,11 +51,10 @@ class HomeAdapter (private val listGames: List<GamesInfo>, val listener: onGameL
         }
 
         override fun onClick(v: View?) {
-            val pos = adapterPosition
-            if (RecyclerView.NO_POSITION != pos){
-                listener.click(pos)
+            val position = adapterPosition
+            if (RecyclerView.NO_POSITION != position){
+                listener.onClick(itemView)
             }
         }
     }
-
 }

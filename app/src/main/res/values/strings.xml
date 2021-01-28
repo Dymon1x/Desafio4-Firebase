@@ -16,5 +16,6 @@
     <string name="desc">Description</string>
     <string name="btn_save_game">Save Game</string>
     <string name="gameName">Game Name</string>
+    <string name="microfone">microfone</string>
 
 </resources>
