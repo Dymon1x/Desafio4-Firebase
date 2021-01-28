@@ -55,7 +55,7 @@ class CadastroActivity : AppCompatActivity() {
                     val idUser = firebaseUser.uid
                     val emailUser = firebaseUser.email.toString()
 
-/*                    callMain(idUser, emailUser)*/
+                    callMain(idUser, emailUser)
 
                 } else {
                     showMsg(task.exception?.message.toString())

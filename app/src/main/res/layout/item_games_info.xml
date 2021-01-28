@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_marginStart="10dp"
-    android:layout_width="180dp"
+    android:layout_width="155dp"
     android:backgroundTint="@color/white"
     app:cardCornerRadius="10dp"
     android:layout_marginEnd="10dp"
@@ -12,7 +12,7 @@
     android:layout_marginTop="10dp"
     android:layout_height="200dp">
 
-    <LinearLayout
+    <GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -22,14 +22,8 @@
             android:layout_width="match_parent"
             android:layout_height="120dp"
             android:src="@drawable/kratos2"
-            android:scaleType="fitXY"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            android:padding="15dp"
-            android:orientation="vertical">
+            android:scaleType="fitXY"
+            android:contentDescription="TODO" />
 
             <TextView
                 android:id="@+id/tv_title_game"
@@ -50,6 +44,5 @@
                 android:gravity="center"
                 android:textColor="@color/gray" />
 
-        </LinearLayout>
-    </LinearLayout>
+    </GridLayout>
 </androidx.cardview.widget.CardView>

@@ -4,101 +4,109 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ui.GamesDetailActivity">
 
     <RelativeLayout
+        android:id="@+id/rlDetails"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="250dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <RelativeLayout
+        <ImageView
+            android:id="@+id/img_fundo"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:contentDescription="Image"
+            android:scaleType="fitXY"
+            android:src="@drawable/kratos2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:ignore="MissingConstraints">
+            android:layout_marginTop="180dp"
+            android:layout_marginLeft="25dp"
+            android:text="@string/gameName"
+            android:textColor="@color/white"
+            android:textSize="35sp"
+            tools:layout_editor_absoluteX="40dp"
+            tools:layout_editor_absoluteY="179dp" />
 
-            <ImageView
-                android:id="@+id/img_fundo"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/kratos2" />
-
-            <ImageView
-                android:id="@+id/img_back"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_margin="20dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_arrow_back" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="195dp"
-                android:text="@string/gameName"
-                android:textColor="@color/white"
-                android:textSize="35sp" />
+        <ImageView
+            android:id="@+id/img_back"
+            android:layout_width="55dp"
+            android:layout_height="50dp"
+            android:layout_margin="20dp"
+            android:contentDescription="TODO"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_arrow_back"
+            tools:layout_editor_absoluteX="27dp"
+            tools:layout_editor_absoluteY="16dp" />
 
         </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/rlDetailsdown"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fb_editGame"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="350dp"
-            android:layout_marginTop="220dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:background="@drawable/round_body"
             android:backgroundTint="@color/red"
             android:clickable="true"
-            android:src="@drawable/ic_edit" />
+            android:contentDescription="TODO"
+            android:src="@drawable/ic_edit"
+            android:translationX="288dp"
+            android:translationY="220dp"
+            />
 
+        <TextView
+            android:id="@+id/tvNameGame"
+            android:layout_width="184dp"
+            android:layout_height="93dp"
+            android:gravity="center"
+            android:text="God of War II"
+            android:textColor="@color/black"
+            android:translationX="25dp"
+            android:translationY="260dp"
+            android:textSize="25sp"
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/tvDataGame"
+            android:layout_width="182dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Lançamento: 2018"
+            android:textColor="@color/gray"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            tools:ignore="MissingConstraints"
+            android:translationX="16dp"
+            android:translationY="333dp"/>
+
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="331dp"
+            android:layout_height="257dp"
+            android:text="descrição oooooooooooooooooooooooooooooooo"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:translationX="20dp"
+            android:translationY="400dp"
+            tools:ignore="MissingConstraints" />
 
     </RelativeLayout>
-
-    <TextView
-        android:id="@+id/tvNameGame"
-        android:layout_width="182dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:gravity="start"
-        android:text="God of War II"
-        android:textColor="@color/black"
-        android:textSize="25dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.381" />
-
-    <TextView
-        android:id="@+id/tvDescription"
-        android:layout_width="377dp"
-        android:layout_height="350dp"
-        android:layout_margin="20dp"
-        android:text="descrição oooooooooooooooooooooooooooooooo"
-        android:textColor="@color/black"
-        android:textSize="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.444"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.969" />
-
-    <TextView
-        android:id="@+id/tvDataGame"
-        android:layout_width="181dp"
-        android:layout_height="27dp"
-        android:layout_marginTop="5dp"
-        android:text="Lançamento: 2018"
-        android:textColor="@color/gray"
-        android:textSize="15dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.091"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.433" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
