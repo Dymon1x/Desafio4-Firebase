@@ -8,52 +8,56 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import br.com.digitalhouse.firebaselogin_desafio4.R
 import br.com.digitalhouse.firebaselogin_desafio4.model.GamesInfo
-import com.bumptech.glide.Glide
+import com.squareup.picasso.Picasso
 
-class GamesInfoAdapter(private val listGames: ArrayList<GamesInfo>,
-                       val listener: View.OnClickListener
-): RecyclerView.Adapter<GamesInfoAdapter.GamesViewHolder>() {
+class GamesInfoAdapter(
+    private val listGames: ArrayList<GamesInfo>,
+    val listener: OnGameClick
+) : RecyclerView.Adapter<GamesInfoAdapter.GamesViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): GamesInfoAdapter.GamesViewHolder {
-        val itemview = LayoutInflater.from(parent.context).inflate(R.layout.item_games_info, parent, false)
+    ): GamesViewHolder {
+        val itemview =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_games_info, parent, false)
 
         return GamesViewHolder(itemview)
     }
 
-    override fun onBindViewHolder(holder: GamesInfoAdapter.GamesViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: GamesViewHolder, position: Int) {
 
-        val current = listGames[position]
+        val games = listGames[position]
 
-        holder.title.text = current.titulo
-        holder.date.text = current.data_lancamento.toString()
+        holder.title.text = games.titulo
+        holder.data.text =  games.data_lancamento
 
-        holder.img.setOnClickListener(listener)
-
-        Glide.with(holder.itemView).asBitmap()
-            .load(current.img)
-            .into(holder.img)
-
+        Picasso.get().load(games.imgURL).into(holder.img)
     }
 
     override fun getItemCount() = listGames.size
 
+    interface OnGameClick {
+        fun onClick(position: Int)
+    }
 
 
-    inner class GamesViewHolder(view: View): RecyclerView.ViewHolder(view), View.OnClickListener{
-        val title: TextView = view.findViewById(R.id.tv_title_game)
-        val date: TextView = view.findViewById(R.id.tv_year_game)
+    inner class GamesViewHolder(view: View) : RecyclerView.ViewHolder(view),
+        View.OnClickListener {
+
         val img: ImageView = view.findViewById(R.id.iv_game)
+        val title: TextView = view.findViewById(R.id.tv_title_game)
+        val data: TextView = view.findViewById(R.id.tv_year_game)
+
 
         init {
             view.setOnClickListener(this)
         }
 
+
         override fun onClick(v: View?) {
             val position = adapterPosition
-            if (RecyclerView.NO_POSITION != position){
-                listener.onClick(itemView)
+            if (RecyclerView.NO_POSITION != position) {
+                listener.onClick(position)
             }
         }
     }

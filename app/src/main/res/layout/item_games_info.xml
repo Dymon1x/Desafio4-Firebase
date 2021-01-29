@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -25,24 +27,24 @@
             android:scaleType="fitXY"
             android:contentDescription="TODO" />
 
-            <TextView
-                android:id="@+id/tv_title_game"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="GOD OF WAR II"
-                android:textSize="16sp"
-                android:textColor="@color/black"
-                />
+        <TextView
+            android:id="@+id/tv_title_game"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="GOD OF WAR II"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            />
 
-            <TextView
-                android:id="@+id/tv_year_game"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="2007"
-                android:gravity="center"
-                android:textColor="@color/gray" />
+        <TextView
+            android:id="@+id/tv_year_game"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="2007"
+            android:gravity="center"
+            android:textColor="@color/gray" />
 
     </GridLayout>
 </androidx.cardview.widget.CardView>

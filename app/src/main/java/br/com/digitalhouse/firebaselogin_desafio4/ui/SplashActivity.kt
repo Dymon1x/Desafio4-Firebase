@@ -12,10 +12,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SplashActivity : AppCompatActivity() {
-
-
     val scope = CoroutineScope(Dispatchers.Main)
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +24,7 @@ class SplashActivity : AppCompatActivity() {
     fun splash(){
         scope.launch {
             val intent = Intent(this@SplashActivity, SingInActivity::class.java)
-
-            delay(5000)
+            delay(1000)
             startActivity(intent)
             finish()
         }
