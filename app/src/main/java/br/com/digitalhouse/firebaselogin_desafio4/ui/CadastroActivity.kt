@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import br.com.digitalhouse.firebaselogin_desafio4.databinding.ActivityCadastroBinding
+import br.com.digitalhouse.firebaselogin_desafio4.model.Usuario
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
@@ -21,55 +22,49 @@ class CadastroActivity : AppCompatActivity() {
 
 
         bind.cadastroInclude.btnCreateAccount.setOnClickListener {
-            getDataFields()
+            registerUser()
+            callMain()
         }
-    }
-
-    private fun getDataFields() { // password no firebase por default é 6 digitos
-        val nome = bind.cadastroInclude.edNome.text.toString()
-        val email = bind.cadastroInclude.edEmailRegister.text.toString()
-        val password = bind.cadastroInclude.edPasswordRegister.text.toString()
-
-        val nomeEpt = nome.isNotEmpty()
-        val emailEpt = email.isNotEmpty()
-        val passwordEpt = password.isNotEmpty()
-
-        if (emailEpt && passwordEpt) {
-            sendDataFirebase(email, password)
-            callMain(email, password)
-        }
-        else
-            showMsg("Preencha todas as informações ")
     }
 
     //Envia dados para o firebase
 
-    fun sendDataFirebase(email: String, password: String) {
-//        showMsg("Enviando dados para o firebase")
+    private fun sendDataFirebase(user: Usuario){
         FirebaseAuth.getInstance()
-            .createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val firebaseUser: FirebaseUser = task.result?.user!!
-                    showMsg("usuário cadastrado com sucesso")
-                    val idUser = firebaseUser.uid
-                    val emailUser = firebaseUser.email.toString()
-
-                    callMain(idUser, emailUser)
-
+            .createUserWithEmailAndPassword(user.email,user.senha)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    val firebaseUser = it.result?.user!!
+                    
+                    Usuario(firebaseUser.email.toString(), "", firebaseUser.uid)
                 } else {
-                    showMsg(task.exception?.message.toString())
+                    showMsg(it.exception?.message.toString())
                 }
             }
     }
 
+    private  fun  getUserFields(): Usuario?{
+        val name = bind.cadastroInclude.edNome.text.toString()
+        val email = bind.cadastroInclude.edEmailRegister.text.toString()
+        val pass = bind.cadastroInclude.edPasswordRegister.text.toString()
+        
+        return if(email.isNotBlank() && pass.isNotBlank()){
+            Usuario(name, email, pass)
+        }else{
+            null
+        }
+    }
+    private fun registerUser(){
+        val user = getUserFields()
+        if(user != null){
+            sendDataFirebase(user)
+        }else{
+            showMsg("Preencha os campos corretamente")
+        }
+    }
     //Chama Activity main
-    fun callMain(idUser: String, emailUser: String) {
+    fun callMain() {
         val intent = Intent(this, MainActivity::class.java)
-
-        intent.putExtra("id", idUser)
-        intent.putExtra("email", emailUser)
-
         startActivity(intent)
     }
 

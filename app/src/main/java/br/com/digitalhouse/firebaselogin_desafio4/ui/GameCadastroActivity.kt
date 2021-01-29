@@ -1,96 +1,82 @@
 package br.com.digitalhouse.firebaselogin_desafio4.ui
 
-import android.app.AlertDialog
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.viewModels
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import br.com.digitalhouse.firebaselogin_desafio4.adapter.GamesInfoAdapter
+import androidx.appcompat.app.AppCompatActivity
 import br.com.digitalhouse.firebaselogin_desafio4.databinding.ActivityGameCadastroBinding
-import br.com.digitalhouse.firebaselogin_desafio4.firestore.cr
-import br.com.digitalhouse.firebaselogin_desafio4.model.GameViewModel
 import br.com.digitalhouse.firebaselogin_desafio4.model.GamesInfo
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
-import dmax.dialog.SpotsDialog
 
 class GameCadastroActivity : AppCompatActivity() {
 
     private lateinit var bind: ActivityGameCadastroBinding
 
-    lateinit var alertDialog: AlertDialog
     lateinit var storage: StorageReference
-    private val CODE_IMG = 1000
+    private val CODE_IMG = 100
+    private var gameinfo: GamesInfo = GamesInfo()
 
-    private lateinit var gameAdapter: GamesInfoAdapter
-
-
-    private val viewModel by viewModels<GameViewModel> {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return GameViewModel(cr) as T
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = ActivityGameCadastroBinding.inflate(layoutInflater)
-        setContentView(bind.root)
 
 /*        setContentView(R.layout.activity_game_cadastro)*/
 
-        configuration()
-        bind.imgGame.setOnClickListener {
-            getRec()
-        }
 
+        bind.imgGame.setOnClickListener {
+            getPicture()
+        }
 
         bind.includeCadastroGames.btnSaveGame.setOnClickListener {
-            viewModel.updateGameFirestore(GamesInfo().apply {
-                img
-                titulo
-                data_lancamento
-                descricao
-            })
-            callMain()
+            gameinfo.titulo = bind.includeCadastroGames.nameGame.text.toString()
+            gameinfo.data_lancamento = bind.includeCadastroGames.edDate.text.toString()
+            gameinfo.descricao = bind.includeCadastroGames.edDescription.text.toString()
+
+            if (gameinfo.imgURL == "") {
+                showMsg("Adicione imagem")
+            } else {
+
+                saveInfo()
+                finish()
+            }
         }
 
+        setContentView(bind.root)
+
 
     }
 
-    fun callMain(){
-        startActivity(Intent(this, MainActivity::class.java))
-    }
-
-    fun configuration(){
-        alertDialog = SpotsDialog.Builder().setContext(this).build()
-        storage = FirebaseStorage.getInstance().getReference("img")
-
-    }
-
-    fun getRec(){
+    private fun getPicture() {
+        storage = FirebaseStorage.getInstance().getReference(getUniqueId())
         val intent = Intent()
         intent.type = "image/"
         intent.action = Intent.ACTION_GET_CONTENT
         startActivityForResult(Intent.createChooser(intent, "Captura Imagem"), CODE_IMG)
     }
 
+    private fun saveInfo() {
+        val db = FirebaseFirestore.getInstance().collection("Games")
+        val id = getUniqueId()
+        gameinfo.id = id
+        db.document(id).set(gameinfo)
+    }
+
+    private fun getUniqueId() = FirebaseFirestore.getInstance().collection("Chave").document().id
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == CODE_IMG) {
-            alertDialog.show()
-            val uploadFile = storage.putFile(data!!.data!!)
-            val task = uploadFile.continueWithTask { task ->
+
+            val upFile = storage.putFile(data!!.data!!)
+            upFile.continueWithTask { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Imagem Carrregada com sucesso!", Toast.LENGTH_SHORT)
-                        .show()
+                    showMsg("Imagem Carregada !!!")
                 }
                 storage!!.downloadUrl
             }.addOnCompleteListener { task ->
@@ -99,11 +85,15 @@ class GameCadastroActivity : AppCompatActivity() {
                     val url = downloadUri!!.toString()
                         .substring(0, downloadUri.toString().indexOf("&token"))
                     Log.i("URL da Imagem", url)
-                    alertDialog.dismiss()
+                    gameinfo.imgURL = url
                     Picasso.get().load(url).into(bind.imgGame)
                 }
             }
         }
     }
-    
+
+
+    private fun showMsg(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
 }

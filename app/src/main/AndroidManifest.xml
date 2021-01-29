@@ -12,10 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Firebaselogin_desafio4">
-        <activity android:name=".ui.CadastroActivity" />
-        <activity android:name=".ui.GameCadastroActivity" />
-        <activity android:name=".ui.GamesDetailActivity" />
-
+        <activity android:name=".ui.EditaGameCadastroActivity"></activity>
         <activity android:name=".ui.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,9 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".ui.SingInActivity" />
+        <activity android:name=".ui.CadastroActivity" />
         <activity android:name=".ui.MainActivity" />
+        <activity android:name=".ui.GameCadastroActivity" />
+        <activity android:name=".ui.GamesDetailActivity" />
     </application>
 
 </manifest>

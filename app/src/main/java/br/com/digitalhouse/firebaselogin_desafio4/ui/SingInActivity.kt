@@ -1,32 +1,16 @@
 package br.com.digitalhouse.firebaselogin_desafio4.ui
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import br.com.digitalhouse.firebaselogin_desafio4.R
 import br.com.digitalhouse.firebaselogin_desafio4.databinding.ActivitySingInBinding
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.Task
+import br.com.digitalhouse.firebaselogin_desafio4.model.Usuario
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
 
 class SingInActivity : AppCompatActivity() {
 
     lateinit var bind: ActivitySingInBinding
-
-    private lateinit var auth: FirebaseAuth
-    private lateinit var googleSignInClient: GoogleSignInClient
-    private val RC_SIGN_IN = 9001
-
-    lateinit var googleSignInOptions: GoogleSignInOptions
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,15 +20,9 @@ class SingInActivity : AppCompatActivity() {
         bind = ActivitySingInBinding.inflate(layoutInflater)
         setContentView(bind.root)
 
-
-        val user = FirebaseAuth.getInstance().currentUser
-
-        if (user != null) {
-            callMain(user.uid, user.email.toString())
-        }
-
         bind.loginInclude.btnLogin.setOnClickListener {
-            getDataFields()
+            login()
+            callMain()
         }
 
         bind.loginInclude.btnCadastreSe.setOnClickListener {
@@ -52,190 +30,66 @@ class SingInActivity : AppCompatActivity() {
 
         }
 
-//        settingsGoogle()
-/*        configureGoogleSignIn()
-        bind.loginInclude.googleButton.setOnClickListener {
-            signIn()
-        }*/
-
-    }
-/*
-
-    //Google
-
-
-    private fun configureGoogleSignIn() {
-        googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-        googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
-
-        val account = GoogleSignIn.getLastSignedInAccount(this)
     }
 
-    private fun signIn() {
-        val signInIntent: Intent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)
-    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == RC_SIGN_IN) {
-
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            handleSignInResult(task)
-        }
-    }
-
-    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
-        try {
-            val account = completedTask.getResult(ApiException::class.java)
-            val acct = GoogleSignIn.getLastSignedInAccount(this)
-
-            if(acct != null){
-
-                val personName = acct.displayName
-                val personGivenName = acct.givenName
-                val personFamilyName = acct.familyName
-                val personEmail = acct.email
-                val personId = acct.id
-                val personPhoto: Uri? = acct.photoUrl
-
-                Toast.makeText(this, "user: $personName", Toast.LENGTH_SHORT).show()
-                personName?.let { openHome(it) }
-            }
-        } catch (e: ApiException) {
-            Log.i("signInResult", "failed code=" + e.statusCode)
-        }
-    }
-
-    private fun openHome(msg: String) {
-        // recebe como parametro apenas o nome
-        val intent = Intent(this, MainActivity::class.java).apply {
-            putExtra("nome", msg)
-        }
-        startActivity(intent)
-
-    }
-
-*/
-
-
-    fun getDataFields() { // password no firebase por default é 6 digitos
+    private fun getDataFields(): Usuario? { // password no firebase por default é 6 digitos
 
         val email = bind.loginInclude.edEmail.text.toString()
         val password = bind.loginInclude.edPassword.text.toString()
-        val emailEpt = email.isNotEmpty()
-        val passwordEpt = password.isNotEmpty()
 
-        if (emailEpt && passwordEpt)
-            sendDataFirebase(email, password)
-        else
-            showMsg("Preencha todas as informações ")
+        return if (email.isNotBlank() and password.isNotBlank()) {
+            Usuario("", email, password)
+        } else {
+            null
+        }
     }
 
-    fun sendDataFirebase(email: String, password: String) {
+    private fun sendDataFirebase(user: Usuario) {
 //        showMsg("Enviando dados para o firebase")
         FirebaseAuth.getInstance()
-            .signInWithEmailAndPassword(email, password) // só ira muda o . depois da instance
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val firebaseUser: FirebaseUser = task.result?.user!!
-                    val idUser = firebaseUser.uid
-                    val emailUser = firebaseUser.email.toString()
+            .signInWithEmailAndPassword(
+                user.email,
+                user.senha
+            ) // só ira muda o . depois da instance
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    val firebaseUser = it.result?.user!!
+                    Usuario(firebaseUser.email.toString(), "", firebaseUser.uid)
 
-                    callMain(idUser, emailUser)
+                    showMsg("Login Realizado")
 
-                } else {
-                    showMsg(task.exception?.message.toString())
+                } else if (it.isCanceled) {
+                    showMsg("Falha no Login, tente mais uma vez !")
                 }
             }
     }
 
 
-    //Chama Activity main
-    fun callMain(idUser: String, emailUser: String) {
-        val intent = Intent(this, MainActivity::class.java)
+    private fun login() {
+        val user = getDataFields()
 
-        intent.putExtra("id", idUser)
-        intent.putExtra("email", emailUser)
-
-        startActivity(intent)
+        if (user != null) {
+            sendDataFirebase(user)
+        } else {
+            showMsg("Preencha os campos corretamente")
+        }
     }
 
     //Exibe informação
-    fun showMsg(msg: String) {
+    private fun showMsg(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 
+    //Chama Activity main
+    private fun callMain() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+    }
+
     //Chama a activity de cadastro
-    fun callRegister() {
+    private fun callRegister() {
         startActivity(Intent(this, CadastroActivity::class.java))
     }
 
-
-    //GOOGLE LOGIN
-
-    /*   fun settingsGoogle(){
-           val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-               .requestEmail()
-               .build()
-
-           //constroi o singInOptions
-           googleSignInClient = GoogleSignIn.getClient(this, gso)
-
-           //Captura o ultimo id
-           val account = GoogleSignIn.getLastSignedInAccount(this)
-       }
-
-
-       //Cria a funçao do signIn
-       fun loginGoogle(){
-           val signInIntent: Intent = googleSignInClient.getSignInIntent()
-           startActivityForResult(signInIntent, RC_SIGN_IN)
-
-       }
-
-       override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-           super.onActivityResult(requestCode, resultCode, data)
-
-           if (requestCode == RC_SIGN_IN) {
-
-               val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-               handleSignInResult(task)
-           }
-       }
-
-       private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
-           try {
-               val account = completedTask.getResult(ApiException::class.java)
-               val acct = GoogleSignIn.getLastSignedInAccount(this)
-
-               if(acct != null){
-
-                   val personName = acct.displayName
-                   val personGivenName = acct.givenName
-                   val personFamilyName = acct.familyName
-                   val personEmail = acct.email
-                   val personId = acct.id
-                   val personPhoto: Uri? = acct.photoUrl
-
-                   Toast.makeText(this, "user: $personName", Toast.LENGTH_SHORT).show()
-                   personName?.let { openHome(it) }
-               }
-           } catch (e: ApiException) {
-               Log.i("signInResult", "failed code=" + e.statusCode)
-           }
-       }
-
-       private fun openHome(msg: String) {
-           // recebe como parametro apenas o nome
-           val intent = Intent(this, MainActivity::class.java).apply {
-               putExtra("nome", msg)
-           }
-           startActivity(intent)
-
-       }*/
 }
